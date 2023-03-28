@@ -1,14 +1,44 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import { fetchContacts, addContact, deleteContact } from './operations';
+
+const handlePending = state => {
+  state.isLoading = true;
+};
+const handleRejected = (state, action) => {
+  state.isLoading = false;
+  state.error = action.payload;
+};
 
 export const contactsSlice = createSlice({
   name: 'contactsState',
 
-  initialState: { contacts: [] },
+  initialState: {
+    contacts: [],
+    isLoading: false,
+    error: null,
+  },
+  extraReducers: {
+    [fetchContacts.pending]: handlePending,
+    [addContact.pending]: handlePending,
+    [deleteContact.pending]: handlePending,
+    [fetchContacts.rejected]: handleRejected,
+    [addContact.rejected]: handleRejected,
+    [deleteContact.rejected]: handleRejected,
 
-  reducers: {
-    addContact(state, action) {
+    //   Функціонал першого маунту сторінки
+
+    [fetchContacts.fulfilled](state, action) {
+      state.isLoading = false;
+      state.error = null;
+      state.contacts = action.payload;
+    },
+
+    // Функціонал додавання контакту
+
+    [addContact.fulfilled](state, action) {
+      state.isLoading = false;
+      state.error = null;
+
       const alertContact = state.contacts.find(
         contact => contact.name === action.payload.name
       );
@@ -20,28 +50,22 @@ export const contactsSlice = createSlice({
       state.contacts.push(action.payload);
     },
 
-    deleteContact(state, action) {
+    // Функціонал видалення контакту
+
+    [deleteContact.fulfilled](state, action) {
+      state.isLoading = false;
+      state.error = null;
       const index = state.contacts.findIndex(
-        task => task.contactID === action.payload
+        contact => contact.id === action.payload.id
       );
       state.contacts.splice(index, 1);
     },
   },
 });
 
-const persistConfig = {
-  key: 'contacts',
-  storage,
-};
-
-export const contactsReducer = persistReducer(
-  persistConfig,
-  contactsSlice.reducer
-);
-
-export const { addContact, deleteContact } = contactsSlice.actions;
-
 export default contactsSlice.reducer;
 
-//Selector
+//Selectors
 export const getContacts = state => state.contactsState.contacts;
+export const getLoading = state => state.contactsState.isLoading;
+export const getError = state => state.contactsState.error;

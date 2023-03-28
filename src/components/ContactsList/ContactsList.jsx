@@ -14,15 +14,15 @@ function ContactsList() {
     );
 
     return (
-        <ListOfContacts>
+        < ListOfContacts >
             {
                 filteredContact.map(contact => {
                     return (
-                        <ListItem key={contact.contactID} id={contact.contactID} name={contact.name} number={contact.number} />
+                        <ListItem key={contact.id} id={contact.id} name={contact.name} number={contact.phone} />
                     )
                 })
             }
-        </ListOfContacts>
+        </ ListOfContacts>
     );
 }
 
