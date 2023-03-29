@@ -12,7 +12,7 @@ function ContactsList() {
     const filteredContact = contacts.filter(contact =>
         contact.name.toLowerCase().includes(filterQuery.toLowerCase())
     );
-
+    console.log(contacts)
     return (
         < ListOfContacts >
             {

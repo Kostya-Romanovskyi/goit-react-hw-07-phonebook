@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { fetchContacts } from 'redux/operations';
-
 import SectionTitle from './Section/SectionTitle';
 import Form from './Form/Form';
 import Section from './Section/Section';

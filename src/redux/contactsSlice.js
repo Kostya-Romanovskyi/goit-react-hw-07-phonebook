@@ -2,20 +2,22 @@ import { createSlice } from '@reduxjs/toolkit';
 import { fetchContacts, addContact, deleteContact } from './operations';
 
 const handlePending = state => {
-  state.isLoading = true;
+  state.contacts.isLoading = true;
 };
 const handleRejected = (state, action) => {
-  state.isLoading = false;
-  state.error = action.payload;
+  state.contacts.isLoading = false;
+  state.contacts.error = action.payload;
 };
 
 export const contactsSlice = createSlice({
   name: 'contactsState',
 
   initialState: {
-    contacts: [],
-    isLoading: false,
-    error: null,
+    contacts: {
+      item: [],
+      isLoading: false,
+      error: null,
+    },
   },
   extraReducers: {
     [fetchContacts.pending]: handlePending,
@@ -28,18 +30,18 @@ export const contactsSlice = createSlice({
     //   Функціонал першого маунту сторінки
 
     [fetchContacts.fulfilled](state, action) {
-      state.isLoading = false;
-      state.error = null;
-      state.contacts = action.payload;
+      state.contacts.isLoading = false;
+      state.contacts.error = null;
+      state.contacts.item = action.payload;
     },
 
     // Функціонал додавання контакту
 
     [addContact.fulfilled](state, action) {
-      state.isLoading = false;
-      state.error = null;
+      state.contacts.isLoading = false;
+      state.contacts.error = null;
 
-      const alertContact = state.contacts.find(
+      const alertContact = state.contacts.item.find(
         contact => contact.name === action.payload.name
       );
 
@@ -47,18 +49,20 @@ export const contactsSlice = createSlice({
         return alert(`${action.payload.name} is already in contacts`);
       }
 
-      state.contacts.push(action.payload);
+      state.contacts.item.push(action.payload);
     },
 
     // Функціонал видалення контакту
 
     [deleteContact.fulfilled](state, action) {
-      state.isLoading = false;
-      state.error = null;
-      const index = state.contacts.findIndex(
+      state.contacts.isLoading = false;
+      state.contacts.error = null;
+
+      const index = state.contacts.item.findIndex(
         contact => contact.id === action.payload.id
       );
-      state.contacts.splice(index, 1);
+
+      state.contacts.item.splice(index, 1);
     },
   },
 });
@@ -66,6 +70,6 @@ export const contactsSlice = createSlice({
 export default contactsSlice.reducer;
 
 //Selectors
-export const getContacts = state => state.contactsState.contacts;
-export const getLoading = state => state.contactsState.isLoading;
-export const getError = state => state.contactsState.error;
+export const getContacts = state => state.contactsState.contacts.item;
+export const getLoading = state => state.contactsState.contacts.isLoading;
+export const getError = state => state.contactsState.contacts.error;
